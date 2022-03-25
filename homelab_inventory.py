@@ -106,5 +106,3 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                     self.inventory.add_host(machine.ip, group=value)
                 else:
                     self.inventory.set_variable(machine.ip, key, value)
-
-        print(self.inventory.__dict__)
