@@ -8,6 +8,7 @@ from ansible.inventory.data import InventoryData
 
 class Machine:
     def __init__(self, machine: dict) -> None:
+        # Required
         self.id: str = machine["_id"]
         self.name: str = machine["name"]
         self.ip: str = machine["ip"]
@@ -15,6 +16,8 @@ class Machine:
         self.network: str = machine["network"]
         self.modules: List[str] = machine["modules"]
         self.tags: List[Dict[str, str]] = machine["tags"]
+        # Optional
+        self.dns_name: str = machine.get("dnsName", None)
 
 
 class HomelabDBClient:
@@ -98,11 +101,14 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             machines = self.database.get_all()
 
         for machine in machines:
-            self.inventory.add_host(machine.ip)
-        for tag in machine.tags:
-            for key, value in tag.items():
-                if key == "group":
-                    self.inventory.add_group(value)
-                    self.inventory.add_host(machine.ip, group=value)
-                else:
-                    self.inventory.set_variable(machine.ip, key, value)
+            machine_name = machine.ip
+            if machine.dns_name:
+                machine_name = machine.dns_name
+            self.inventory.add_host(machine_name)
+            for tag in machine.tags:
+                for key, value in tag.items():
+                    if key == "group":
+                        self.inventory.add_group(value)
+                        self.inventory.add_host(machine_name, group=value)
+                    else:
+                        self.inventory.set_variable(machine_name, key, value)
