@@ -1,0 +1,8 @@
+plugin: homelab_inventory
+
+user: user # User to connect to database
+password: pass # Password for database
+host: "127.0.0.1" # IP or Hostname to connect to
+port: 27017 # MongoDB port
+database: homelab # Default database to connect to
+target_group: group name # Optional, Group to grab only
